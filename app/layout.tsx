@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     description: "日本語の文字数を簡単にカウント。全角・半角の区別、スペースのカウントなど、便利な機能を搭載。",
   },
   verification: {
-    google: "あとでGoogle Search Consoleから取得したコードを入れる",
+    google: "hSY2Ivsx0GO1nEL-xymnRIaw0696E8vQsOO2IZp0ylk",
   },
 };
 
