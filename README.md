@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 文字数カウンターアプリ
 
-## Getting Started
+シンプルで使いやすい文字数カウンターアプリケーションです。
 
-First, run the development server:
+## 機能
+
+- リアルタイムな文字数カウント
+- 全角・半角文字のカウント設定
+- スペースのカウント設定
+- コピー機能
+- クリア機能
+
+## 技術スタック
+
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Google AdSense
+
+## 開発環境のセットアップ
 
 ```bash
+# リポジトリのクローン
+git clone https://github.com/yourusername/textcounter-app.git
+
+# プロジェクトディレクトリに移動
+cd textcounter-app
+
+# 依存関係のインストール
+npm install
+
+# 開発サーバーの起動
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 環境変数の設定
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`.env.local`ファイルを作成し、以下の環境変数を設定してください：
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_ADSENSE_CLIENT_ID=your-adsense-client-id
+```
 
-## Learn More
+## デプロイ
 
-To learn more about Next.js, take a look at the following resources:
+このアプリケーションは[Vercel](https://vercel.com)にデプロイすることを推奨します。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Vercelへのデプロイ
+vercel
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ライセンス
 
-## Deploy on Vercel
+MIT
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 作者
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[Your Name]
