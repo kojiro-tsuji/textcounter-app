@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 // AdSenseの型定義の改善
 declare global {
   interface Window {
-    adsbygoogle: any[] | undefined;
+    adsbygoogle: Array<Record<string, unknown>> | undefined;
   }
 }
 
@@ -46,12 +46,12 @@ export default function AdBanner({ className = '', adSlot, width, height, positi
   useEffect(() => {
     if (!isDevelopment && isClient && isScriptLoaded && adRef.current && window.adsbygoogle) {
       try {
-        (window.adsbygoogle as any[]).push({});
+        (window.adsbygoogle as Array<Record<string, unknown>>).push({});
       } catch (e) {
         console.error('AdSense error:', e);
       }
     }
-  }, [isClient, isDevelopment, isScriptLoaded]);
+  }, [isClient, isScriptLoaded, isDevelopment]);
 
   // 開発環境用のプレースホルダー
   if (isDevelopment) {
