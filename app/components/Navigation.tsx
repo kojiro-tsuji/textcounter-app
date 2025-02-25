@@ -18,7 +18,7 @@ export default function Navigation() {
       {/* ハンバーガーメニューボタン */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 right-4 xl:right-[180px] z-50 bg-white p-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
+        className="fixed top-4 right-4 z-50 bg-white p-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
         aria-label="メニュー"
       >
         <svg
@@ -48,7 +48,7 @@ export default function Navigation() {
 
       {/* メニュー本体 */}
       <nav
-        className={`fixed top-16 right-4 xl:right-[180px] z-40 bg-white rounded-lg shadow-xl transform transition-transform duration-300 ${
+        className={`fixed top-16 right-4 z-40 bg-white rounded-lg shadow-xl transform transition-transform duration-300 ${
           isOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0 pointer-events-none'
         }`}
       >
