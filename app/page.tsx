@@ -75,13 +75,25 @@ export default function Home() {
 
         {/* フッター広告（全デバイス） */}
         <div className="fixed bottom-0 left-0 right-0 bg-gray-50 py-2 sm:py-4">
-          <div className="max-w-[728px] mx-auto px-4">
-            <AdBanner
-              position="footer"
-              width={728}
-              height={90}
-              className="mx-auto"
-            />
+          <div className="mx-auto px-4">
+            {/* モバイル用広告 */}
+            <div className="block xl:hidden">
+              <AdBanner
+                position="footer"
+                width={320}
+                height={50}
+                className="mx-auto"
+              />
+            </div>
+            {/* PC用広告 */}
+            <div className="hidden xl:block max-w-[728px] mx-auto">
+              <AdBanner
+                position="footer"
+                width={728}
+                height={90}
+                className="mx-auto"
+              />
+            </div>
           </div>
         </div>
       </div>
