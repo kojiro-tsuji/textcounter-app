@@ -37,15 +37,17 @@ export default function Home() {
 
       <div className="min-h-screen bg-gray-50">
         <div className="flex justify-center relative">
-          {/* 左サイド広告 */}
-          <div className="hidden xl:block w-[160px] fixed left-0 top-0 h-screen">
-            <div className="pt-4">
-              <AdBanner
-                position="left"
-                width={160}
-                height={600}
-                className="sticky top-4"
-              />
+          {/* 左サイド広告（PCのみ） */}
+          <div className="hidden xl:block">
+            <div className="w-[160px] fixed left-0 top-0 h-screen">
+              <div className="pt-4">
+                <AdBanner
+                  position="left"
+                  width={160}
+                  height={600}
+                  className="sticky top-4"
+                />
+              </div>
             </div>
           </div>
 
@@ -56,21 +58,23 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 右サイド広告 */}
-          <div className="hidden xl:block w-[160px] fixed right-0 top-0 h-screen">
-            <div className="pt-4">
-              <AdBanner
-                position="right"
-                width={160}
-                height={600}
-                className="sticky top-4"
-              />
+          {/* 右サイド広告（PCのみ） */}
+          <div className="hidden xl:block">
+            <div className="w-[160px] fixed right-0 top-0 h-screen">
+              <div className="pt-4">
+                <AdBanner
+                  position="right"
+                  width={160}
+                  height={600}
+                  className="sticky top-4"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* フッター広告 */}
-        <div className="fixed bottom-0 left-0 right-0 bg-gray-50 py-4">
+        {/* フッター広告（全デバイス） */}
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-50 py-2 sm:py-4">
           <div className="max-w-[728px] mx-auto px-4">
             <AdBanner
               position="footer"
