@@ -38,7 +38,11 @@ npm run dev
 `.env.local`ファイルを作成し、以下の環境変数を設定してください：
 
 ```env
+# Google AdSense
 NEXT_PUBLIC_ADSENSE_CLIENT_ID=your-adsense-client-id
+
+# Google Analytics (オプション)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=your-ga-measurement-id
 ```
 
 ## デプロイ
