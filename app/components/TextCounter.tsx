@@ -38,7 +38,7 @@ export default function TextCounter() {
   }, [text, countOptions]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`文字数: ${getCharacterCount()}\nテキスト:\n${text}`);
+    navigator.clipboard.writeText(text);
   };
 
   const handleClear = () => {
