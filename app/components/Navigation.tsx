@@ -68,6 +68,17 @@ export default function Navigation() {
             </li>
             <li>
               <Link
+                href="/password"
+                className={`block p-2 rounded hover:bg-gray-100 ${
+                  pathname === '/password' ? 'text-blue-500 font-semibold' : 'text-gray-700'
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                パスワード生成
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/terms"
                 className={`block p-2 rounded hover:bg-gray-100 ${
                   pathname === '/terms' ? 'text-blue-500 font-semibold' : 'text-gray-700'
