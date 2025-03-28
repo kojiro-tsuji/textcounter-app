@@ -9,6 +9,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: 'https://textcounter-app.vercel.app/counter',
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 1,
+    },
+    {
+      url: 'https://textcounter-app.vercel.app/password',
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 1,
+    },
+    {
+      url: 'https://textcounter-app.vercel.app/snapPDF',
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 1,
+    },
+    {
       url: 'https://textcounter-app.vercel.app/terms',
       lastModified: new Date(),
       changeFrequency: 'yearly',
