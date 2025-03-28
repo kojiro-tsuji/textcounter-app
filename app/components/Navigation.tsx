@@ -79,6 +79,17 @@ export default function Navigation() {
             </li>
             <li>
               <Link
+                href="/snapPDF"
+                className={`block p-2 rounded hover:bg-gray-100 ${
+                  pathname === '/snapPDF' ? 'text-blue-500 font-semibold' : 'text-gray-700'
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                PDF変換
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/terms"
                 className={`block p-2 rounded hover:bg-gray-100 ${
                   pathname === '/terms' ? 'text-blue-500 font-semibold' : 'text-gray-700'
