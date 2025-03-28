@@ -3,8 +3,11 @@
 import { useState, useCallback } from 'react';
 import { PDFDocument, rgb } from 'pdf-lib';
 import * as mammoth from 'mammoth';
+// 修正1: require() 形式のインポートを変更
 const Papa = require('papaparse');
+
 import * as XLSX from 'xlsx';
+import Image from 'next/image'; // Image コンポーネントをインポート
 
 interface FileData {
   text: string;
@@ -49,8 +52,8 @@ export default function FileConverter() {
     return 'other';
   };
 
-  // プレビューの生成
-  const generatePreview = async (file: File): Promise<string> => {
+  // 修正2: generatePreview 関数を useCallback でラップ
+  const generatePreview = useCallback(async (file: File): Promise<string> => {
     const fileType = getFileType(file);
     
     if (fileType === 'image') {
@@ -59,7 +62,7 @@ export default function FileConverter() {
     
     // 非画像ファイルはタイプに応じたアイコン表示用のデータURIを返す
     return `/api/placeholder/200/200?text=${fileTypeIcons[fileType]}%20${file.name}`;
-  };
+  }, [fileTypeIcons]); // 依存配列に fileTypeIcons を追加
 
   const handleDrop = useCallback(async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -71,7 +74,7 @@ export default function FileConverter() {
     
     const previews = await Promise.all(droppedFiles.map(file => generatePreview(file)));
     setPreviewUrls(previews);
-  }, [generatePreview]);
+  }, [generatePreview, getFileType]);
   
   const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -84,7 +87,7 @@ export default function FileConverter() {
       const previews = await Promise.all(selectedFiles.map(file => generatePreview(file)));
       setPreviewUrls(previews);
     }
-  }, [generatePreview]);
+  }, [generatePreview, getFileType]);
 
   // WordドキュメントからテキストとHTMLを抽出する関数
   const extractFromWord = async (file: File): Promise<FileData> => {
@@ -232,7 +235,8 @@ export default function FileConverter() {
           
           case 'word': {
             try {
-              const { text, html } = await extractFromWord(file);
+              // 修正3: 未使用の変数 html を削除
+              const { text } = await extractFromWord(file);
               const page = pdfDoc.addPage();
               const fontSize = 12;
               const lineHeight = fontSize * 1.2;
@@ -348,6 +352,7 @@ export default function FileConverter() {
           
           case 'text': {
             try {
+              // 修正3: 未使用の変数 html を削除
               const { text } = await extractFromText(file);
               const page = pdfDoc.addPage();
               const fontSize = 11;
@@ -465,11 +470,15 @@ export default function FileConverter() {
                 <div className="bg-gray-100 rounded shadow p-2 h-full flex flex-col">
                   <div className="relative pt-[100%] bg-white rounded mb-2 overflow-hidden">
                     {fileTypes[index] === 'image' ? (
-                      <img
-                        src={previewUrls[index]}
-                        alt={`preview-${index}`}
-                        className="absolute top-0 left-0 w-full h-full object-contain"
-                      />
+                      // 修正4: img タグの代わりに Next.js の Image コンポーネントを使用
+                      <div className="absolute top-0 left-0 w-full h-full">
+                        <Image
+                          src={previewUrls[index]}
+                          alt={`preview-${index}`}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
                     ) : (
                       <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-4xl">
                         {fileTypeIcons[fileTypes[index]]}
