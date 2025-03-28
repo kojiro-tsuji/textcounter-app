@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { PDFDocument, rgb } from 'pdf-lib';
 import * as mammoth from 'mammoth';
-import Papa from 'papaparse';
+const Papa = require('papaparse');
 import * as XLSX from 'xlsx';
 
 interface FileData {
