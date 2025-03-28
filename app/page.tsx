@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "便利ツール集 | 文字数カウント・パスワード生成・PDF変換",

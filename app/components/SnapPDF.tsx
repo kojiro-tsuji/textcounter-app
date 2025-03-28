@@ -1,11 +1,21 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { PDFDocument, rgb } from 'pdf-lib';
 import * as mammoth from 'mammoth';
-// PapaParseのインポート方法を修正
-const Papa = require('papaparse');
+import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
+
+interface FileData {
+  text: string;
+  html: string;
+}
+
+interface CSVResult {
+  data: string[][];
+  errors: unknown[];
+  meta: unknown;
+}
 
 export default function FileConverter() {
   const [files, setFiles] = useState<File[]>([]);
@@ -61,7 +71,7 @@ export default function FileConverter() {
     
     const previews = await Promise.all(droppedFiles.map(file => generatePreview(file)));
     setPreviewUrls(previews);
-  }, []);
+  }, [generatePreview]);
   
   const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -74,10 +84,10 @@ export default function FileConverter() {
       const previews = await Promise.all(selectedFiles.map(file => generatePreview(file)));
       setPreviewUrls(previews);
     }
-  }, []);
+  }, [generatePreview]);
 
   // WordドキュメントからテキストとHTMLを抽出する関数
-  const extractFromWord = async (file: File): Promise<{text: string, html: string}> => {
+  const extractFromWord = async (file: File): Promise<FileData> => {
     const arrayBuffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer });
     const htmlResult = await mammoth.convertToHtml({ arrayBuffer });
@@ -85,7 +95,7 @@ export default function FileConverter() {
   };
   
   // ExcelシートからテキストとHTMLテーブルを生成する関数
-  const extractFromExcel = async (file: File): Promise<{text: string, html: string}> => {
+  const extractFromExcel = async (file: File): Promise<FileData> => {
     const arrayBuffer = await file.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
     let text = '';
@@ -93,12 +103,12 @@ export default function FileConverter() {
     
     workbook.SheetNames.forEach(sheetName => {
       const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as string[][];
       
       text += `Sheet: ${sheetName}\n`;
       html += `<h3>Sheet: ${sheetName}</h3><table border="1">`;
       
-      jsonData.forEach((row: any) => {
+      jsonData.forEach(row => {
         text += row.join('\t') + '\n';
         html += '<tr>';
         if (Array.isArray(row)) {
@@ -118,7 +128,7 @@ export default function FileConverter() {
   };
   
   // CSVファイルからテキストとHTMLテーブルを生成する関数
-  const extractFromCSV = async (file: File): Promise<{text: string, html: string}> => {
+  const extractFromCSV = async (file: File): Promise<FileData> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -127,14 +137,14 @@ export default function FileConverter() {
           Papa.parse(csvText, {
             header: false,
             skipEmptyLines: true,
-            complete: (results: {data: any[][], errors: any[], meta: any}) => {
+            complete: (results: CSVResult) => {
               let text = '';
               let html = '<table border="1">';
               
-              results.data.forEach((row: any[]) => {
+              results.data.forEach(row => {
                 text += row.join('\t') + '\n';
                 html += '<tr>';
-                row.forEach((cell: any) => {
+                row.forEach(cell => {
                   html += `<td>${cell}</td>`;
                 });
                 html += '</tr>';
@@ -154,7 +164,7 @@ export default function FileConverter() {
   };
   
   // テキストファイルを処理する関数
-  const extractFromText = async (file: File): Promise<{text: string, html: string}> => {
+  const extractFromText = async (file: File): Promise<FileData> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (event) => {
