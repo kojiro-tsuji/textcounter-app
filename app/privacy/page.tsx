@@ -147,7 +147,7 @@ export default function Privacy() {
           </section>
 
           <div className="text-sm text-gray-600 mt-12">
-            最終更新日: 2024年3月28日
+            最終更新日: 2025年3月28日
           </div>
         </div>
       </div>
