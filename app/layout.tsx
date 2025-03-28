@@ -13,39 +13,33 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "文字数カウンター | オンラインで簡単テキストカウント",
-  description: "無料で使える文字数カウントツール。文章の文字数を瞬時にカウント。全角・半角の区別、スペースのカウントに対応。SNSの投稿、レポート作成、文章校正に最適。",
-  keywords: "文字数カウンター, テキストカウント, 文字カウント, 文字数チェック, 全角半角, オンラインツール, 無料, リアルタイム, SNS, Twitter, 校正",
+  title: "便利ツール集 | 文字数カウント・パスワード生成・PDF変換",
+  description: "無料で使える便利なオンラインツールコレクション。文字数カウンター、安全なパスワード生成、PDF変換を簡単に利用できます。シンプルな操作性と高機能を兼ね備えたツール群。",
+  keywords: "オンラインツール, 文字数カウンター, パスワード生成, PDF変換, 無料ツール, テキスト解析, ファイル変換",
   alternates: {
     canonical: "https://textcounter-app.vercel.app",
   },
   openGraph: {
-    title: "文字数カウンター | オンラインで簡単テキストカウント",
-    description: "無料で使える文字数カウントツール。文章の文字数を瞬時にカウント。全角・半角の区別、スペースのカウントに対応。SNSの投稿、レポート作成、文章校正に最適。",
+    title: "便利ツール集 | 文字数カウント・パスワード生成・PDF変換",
+    description: "無料で使える便利なオンラインツールコレクション。文字数カウンター、パスワード生成、PDF変換などを簡単に利用できます。",
     url: "https://textcounter-app.vercel.app",
-    siteName: "文字数カウンター",
+    siteName: "便利ツール集",
     locale: "ja_JP",
     type: "website",
     images: [
       {
-        url: "https://textcounter-app.vercel.app/ogp.png", // 後でOGP画像を追加する予定
+        url: "https://textcounter-app.vercel.app/home-ogp.png", // ホーム用OGP画像
         width: 1200,
         height: 630,
-        alt: "文字数カウンター",
+        alt: "便利ツール集",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "文字数カウンター | オンラインで簡単テキストカウント",
-    description: "無料の文字数カウントツール。全角・半角対応、スペースカウント機能付き。",
-    images: ["https://textcounter-app.vercel.app/ogp.png"], // 後でOGP画像を追加する予定
-  },
-  verification: {
-    google: "hSY2Ivsx0GO1nEL-xymnRIaw0696E8vQsOO2IZp0ylk",
-  },
-  other: {
-    "google-adsense-account": "ca-pub-2832423701240106",
+    title: "便利ツール集 | 文字数カウント・パスワード生成・PDF変換",
+    description: "無料で使える便利なオンラインツールコレクション。",
+    images: ["https://textcounter-app.vercel.app/home-ogp.png"],
   },
   category: "tools",
 };

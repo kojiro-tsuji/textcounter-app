@@ -122,16 +122,7 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">9. 子供のプライバシー</h2>
-            <p>
-              当サイトは、13歳未満の子供を対象としたサービスを提供していません。
-              13歳未満の子供から意図的に個人情報を収集することはありません。
-              13歳未満の子供から個人情報が収集されていることが判明した場合は、速やかに削除する措置を講じます。
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">10. プライバシーポリシーの変更</h2>
+            <h2 className="text-xl font-bold mb-4">9. プライバシーポリシーの変更</h2>
             <p>
               当サイトは、必要に応じて本プライバシーポリシーを変更することがあります。
               変更後のプライバシーポリシーは、当サイトに掲載された時点で効力を生じるものとします。
@@ -140,7 +131,7 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">11. お問い合わせ</h2>
+            <h2 className="text-xl font-bold mb-4">10. お問い合わせ</h2>
             <p>
               本プライバシーポリシーに関するご質問やご意見は、お問い合わせフォームからお寄せください。
             </p>
