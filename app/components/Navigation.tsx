@@ -68,6 +68,17 @@ export default function Navigation() {
             </li>
             <li>
               <Link
+                href="/counter"
+                className={`block p-2 rounded hover:bg-gray-100 ${
+                  pathname === '/counter' ? 'text-blue-500 font-semibold' : 'text-gray-700'
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                文字数カウンター
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/password"
                 className={`block p-2 rounded hover:bg-gray-100 ${
                   pathname === '/password' ? 'text-blue-500 font-semibold' : 'text-gray-700'
