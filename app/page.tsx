@@ -132,7 +132,7 @@ export default function HomePage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 border-b pb-3">
                 <div className="font-medium text-gray-700">メールアドレス</div>
-                <div className="md:col-span-2">contact@example.com</div>
+                <div className="md:col-span-2">gongbenhui23@gmail.com</div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <div className="font-medium text-gray-700">事業内容</div>
