@@ -7,7 +7,7 @@ export default function PasswordGenerator() {
   const [password, setPassword] = useState("");
   const [length, setLength] = useState(12);
   const [includeNumbers, setIncludeNumbers] = useState(true);
-  const [includeSymbols, setIncludeSymbols] = useState(true);
+  const [includeSymbols, setIncludeSymbols] = useState(false);
   const [includeUppercase, setIncludeUppercase] = useState(true);
   const [includeLowercase, setIncludeLowercase] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -26,7 +26,7 @@ export default function PasswordGenerator() {
     // 文字種が選択されていない場合は小文字をデフォルトで使用
     if (charset === "") charset = "abcdefghijklmnopqrstuvwxyz";
 
-    const len = Number(length) || 12;
+    const len = Number(length) || 8;
     let generated = "";
     for (let i = 0; i < len; i++) {
       const randomIndex = Math.floor(Math.random() * charset.length);
@@ -140,8 +140,8 @@ export default function PasswordGenerator() {
             <input
               id="password-length"
               type="range"
-              min="4"
-              max="32"
+              min={4}
+              max={20}
               value={length}
               onChange={(e) => setLength(Number(e.target.value))}
               className="w-full h-2.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
