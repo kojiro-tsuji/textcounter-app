@@ -51,7 +51,110 @@ return (
             <PasswordGenerator />
           </div>
         </div>
-        
+
+        {/* how to セクション　*/}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden p-6 sm:p-8 mb-8 max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">パスワード生成ツールの使い方</h2>
+          
+          <div className="space-y-6">
+            <div className="border-l-4 border-blue-500 pl-4 py-2">
+              <p className="text-gray-700">
+                強力で安全なパスワードを生成するためのシンプルなステップをご紹介します。これに従って、オンラインアカウントのセキュリティを強化しましょう。
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 rounded-lg p-5">
+                <div className="flex items-start mb-3">
+                  <div className="flex-shrink-0 bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center text-blue-600 font-bold mr-3">1</div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">パスワードの長さを設定</h3>
+                    <p className="text-gray-600 text-sm">
+                      スライダーを動かして、生成するパスワードの長さを調整します。セキュリティ専門家は一般的に12文字以上を推奨しています。
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-5">
+                <div className="flex items-start mb-3">
+                  <div className="flex-shrink-0 bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center text-blue-600 font-bold mr-3">2</div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">含める文字種を選択</h3>
+                    <p className="text-gray-600 text-sm">
+                      大文字、小文字、数字、記号のチェックボックスを使って、パスワードに含める文字種を指定します。多くの種類を含めるほど、パスワードの強度は高まります。
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-5">
+                <div className="flex items-start mb-3">
+                  <div className="flex-shrink-0 bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center text-blue-600 font-bold mr-3">3</div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">パスワードを生成</h3>
+                    <p className="text-gray-600 text-sm">
+                      「パスワードを生成」ボタンをクリックして、設定に基づいた安全なランダムパスワードを作成します。必要に応じて何度でも再生成できます。
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-5">
+                <div className="flex items-start mb-3">
+                  <div className="flex-shrink-0 bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center text-blue-600 font-bold mr-3">4</div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">パスワードの強度を確認</h3>
+                    <p className="text-gray-600 text-sm">
+                      生成されたパスワードの下に表示される強度インジケーターで、セキュリティレベルを確認します。「強い」または「非常に強い」評価を目指しましょう。
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-5">
+                <div className="flex items-start mb-3">
+                  <div className="flex-shrink-0 bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center text-blue-600 font-bold mr-3">5</div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">パスワードの表示/非表示</h3>
+                    <p className="text-gray-600 text-sm">
+                      目のアイコンをクリックすると、生成されたパスワードを表示または非表示にできます。他人が見ている場合は非表示にしておくことをおすすめします。
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-5">
+                <div className="flex items-start mb-3">
+                  <div className="flex-shrink-0 bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center text-blue-600 font-bold mr-3">6</div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">パスワードをコピー</h3>
+                    <p className="text-gray-600 text-sm">
+                      クリップボードアイコンをクリックして、生成されたパスワードをコピーし、必要なサービスのサインアップやパスワード変更時に使用します。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-yellow-50 p-5 rounded-lg border-l-4 border-yellow-400">
+              <h3 className="font-semibold text-yellow-800 mb-2">セキュリティに関する注意</h3>
+              <ul className="list-disc list-inside space-y-1 text-gray-700 text-sm">
+                <li>生成されたパスワードはどこかに保存しておくか、パスワードマネージャーに登録しましょう</li>
+                <li>重要なアカウント（メール、銀行、クラウドストレージなど）には特に強力なパスワードを使用してください</li>
+                <li>パスワードは定期的に変更し、同じパスワードを複数のサービスで使い回さないようにしましょう</li>
+                <li>可能な限り、2段階認証と組み合わせることでセキュリティをさらに強化できます</li>
+              </ul>
+            </div>
+            
+            <div className="bg-blue-50 p-5 rounded-lg">
+              <h3 className="font-semibold text-blue-800 mb-2">プライバシーについて</h3>
+              <p className="text-gray-700 text-sm">
+                このパスワード生成ツールはお使いのブラウザ内で実行され、生成されたパスワードやあなたの設定がサーバーに送信されることはありません。すべての処理はあなたのデバイス内で安全に行われます。
+              </p>
+            </div>
+          </div>
+        </div>  
         {/* 情報セクション - 2カラムレイアウト */}
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* 左カラム */}
