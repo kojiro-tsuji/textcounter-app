@@ -117,6 +117,30 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <section className="mt-12 mb-16">
+          <h2 className="text-2xl font-semibold mb-6 text-center">運営者情報</h2>
+          <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-sm">
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 border-b pb-3">
+                <div className="font-medium text-gray-700">サイト名</div>
+                <div className="md:col-span-2">便利ツール集</div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 border-b pb-3">
+                <div className="font-medium text-gray-700">運営者</div>
+                <div className="md:col-span-2">辻　恒次朗</div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 border-b pb-3">
+                <div className="font-medium text-gray-700">メールアドレス</div>
+                <div className="md:col-span-2">contact@example.com</div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <div className="font-medium text-gray-700">事業内容</div>
+                <div className="md:col-span-2">ウェブサイトの企画・開発・運営</div>
+              </div>
+            </div>
+          </div>
+        </section>        
       </div>
     </main>
   );
