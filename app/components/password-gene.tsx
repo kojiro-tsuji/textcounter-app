@@ -5,7 +5,7 @@ import { Copy, Check, RefreshCw, Eye, EyeOff } from "lucide-react";
 
 export default function PasswordGenerator() {
   const [password, setPassword] = useState("");
-  const [length, setLength] = useState(12);
+  const [length, setLength] = useState(8);
   const [includeNumbers, setIncludeNumbers] = useState(true);
   const [includeSymbols, setIncludeSymbols] = useState(false);
   const [includeUppercase, setIncludeUppercase] = useState(true);
@@ -141,7 +141,7 @@ export default function PasswordGenerator() {
               id="password-length"
               type="range"
               min={4}
-              max={20}
+              max={32}
               value={length}
               onChange={(e) => setLength(Number(e.target.value))}
               className="w-full h-2.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
