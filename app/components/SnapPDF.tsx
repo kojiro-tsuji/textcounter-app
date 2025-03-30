@@ -1,13 +1,11 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import * as mammoth from 'mammoth';
-// 修正1: require() 形式のインポートを変更
+// require() 形式のインポートを維持
 const Papa = require('papaparse');
-
 import * as XLSX from 'xlsx';
-import Image from 'next/image'; // Image コンポーネントをインポート
 
 interface FileData {
   text: string;
@@ -40,7 +38,7 @@ export default function FileConverter() {
   };
 
   // ファイルタイプの判定
-  const getFileType = (file: File): string => {
+  const getFileType = useCallback((file: File): string => {
     const type = file.type.toLowerCase();
     if (type.startsWith('image/')) return 'image';
     if (type === 'application/pdf') return 'pdf';
@@ -50,9 +48,44 @@ export default function FileConverter() {
     if (type === 'text/csv') return 'csv';
     if (type.includes('powerpoint') || type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation') return 'powerpoint';
     return 'other';
-  };
+  }, []);
 
-  // 修正2: generatePreview 関数を useCallback でラップ
+  // クライアントサイドでプレースホルダー画像を生成する関数
+  const createPlaceholderDataURI = (icon: string, filename: string): string => {
+    // Canvas要素を作成
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 200;
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) return '';
+    
+    // 背景を描画
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // アイコンとファイル名を描画
+    ctx.fillStyle = '#333333';
+    ctx.font = '40px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(icon, canvas.width / 2, canvas.height / 2 - 20);
+    
+    ctx.font = '16px Arial';
+    
+    // ファイル名が長い場合は省略
+    let displayName = filename;
+    if (displayName.length > 15) {
+      displayName = displayName.substring(0, 12) + '...';
+    }
+    
+    ctx.fillText(displayName, canvas.width / 2, canvas.height / 2 + 40);
+    
+    // DataURIとして返す
+    return canvas.toDataURL('image/png');
+  };
+  
+  // プレビュー生成関数
   const generatePreview = useCallback(async (file: File): Promise<string> => {
     const fileType = getFileType(file);
     
@@ -60,10 +93,11 @@ export default function FileConverter() {
       return URL.createObjectURL(file);
     }
     
-    // 非画像ファイルはタイプに応じたアイコン表示用のデータURIを返す
-    return `/api/placeholder/200/200?text=${fileTypeIcons[fileType]}%20${file.name}`;
-  }, [fileTypeIcons]); // 依存配列に fileTypeIcons を追加
+    // 非画像ファイルはクライアントサイドで生成したプレースホルダー画像を使用
+    return createPlaceholderDataURI(fileTypeIcons[fileType], file.name);
+  }, [fileTypeIcons, getFileType]);
 
+  // ドラッグ&ドロップ処理
   const handleDrop = useCallback(async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const droppedFiles = Array.from(event.dataTransfer.files);
@@ -76,6 +110,7 @@ export default function FileConverter() {
     setPreviewUrls(previews);
   }, [generatePreview, getFileType]);
   
+  // ファイル選択処理
   const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const selectedFiles = Array.from(event.target.files);
@@ -91,77 +126,115 @@ export default function FileConverter() {
 
   // WordドキュメントからテキストとHTMLを抽出する関数
   const extractFromWord = async (file: File): Promise<FileData> => {
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.extractRawText({ arrayBuffer });
-    const htmlResult = await mammoth.convertToHtml({ arrayBuffer });
-    return { text: result.value, html: htmlResult.value };
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      const htmlResult = await mammoth.convertToHtml({ arrayBuffer });
+      return { text: result.value, html: htmlResult.value };
+    } catch (error) {
+      console.error('Word文書の処理中にエラーが発生しました:', error);
+      throw new Error('Word文書の処理に失敗しました');
+    }
   };
   
   // ExcelシートからテキストとHTMLテーブルを生成する関数
   const extractFromExcel = async (file: File): Promise<FileData> => {
-    const arrayBuffer = await file.arrayBuffer();
-    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-    let text = '';
-    let html = '<div>';
-    
-    workbook.SheetNames.forEach(sheetName => {
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as string[][];
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+      let text = '';
+      let html = '<div>';
       
-      text += `Sheet: ${sheetName}\n`;
-      html += `<h3>Sheet: ${sheetName}</h3><table border="1">`;
-      
-      jsonData.forEach(row => {
-        text += row.join('\t') + '\n';
-        html += '<tr>';
-        if (Array.isArray(row)) {
-          row.forEach(cell => {
+      workbook.SheetNames.forEach(sheetName => {
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+        
+        text += `Sheet: ${sheetName}\n`;
+        html += `<h3>Sheet: ${sheetName}</h3><table border="1">`;
+        
+        jsonData.forEach(row => {
+          if (!Array.isArray(row)) return;
+          
+          const rowValues = row.map(cell => cell?.toString() || '');
+          text += rowValues.join('\t') + '\n';
+          
+          html += '<tr>';
+          rowValues.forEach(cell => {
             html += `<td>${cell}</td>`;
           });
-        }
-        html += '</tr>';
+          html += '</tr>';
+        });
+        
+        html += '</table><br/>';
+        text += '\n';
       });
       
-      html += '</table><br/>';
-      text += '\n';
-    });
-    
-    html += '</div>';
-    return { text, html };
+      html += '</div>';
+      return { text, html };
+    } catch (error) {
+      console.error('Excelファイルの処理中にエラーが発生しました:', error);
+      throw new Error('Excelファイルの処理に失敗しました');
+    }
   };
   
   // CSVファイルからテキストとHTMLテーブルを生成する関数
   const extractFromCSV = async (file: File): Promise<FileData> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
+      
       reader.onload = (event) => {
-        if (event.target) {
+        if (!event.target || !event.target.result) {
+          reject(new Error('CSVファイルの読み込みに失敗しました'));
+          return;
+        }
+        
+        try {
           const csvText = event.target.result as string;
           Papa.parse(csvText, {
             header: false,
             skipEmptyLines: true,
-            complete: (results: CSVResult) => {
-              let text = '';
-              let html = '<table border="1">';
-              
-              results.data.forEach(row => {
-                text += row.join('\t') + '\n';
-                html += '<tr>';
-                row.forEach(cell => {
-                  html += `<td>${cell}</td>`;
-                });
-                html += '</tr>';
-              });
-              
-              html += '</table>';
-              resolve({ text, html });
+            complete: (results: any) => {
+              try {
+                let text = '';
+                let html = '<table border="1">';
+                
+                if (Array.isArray(results.data)) {
+                  results.data.forEach((row: any[]) => {
+                    if (!Array.isArray(row)) return;
+                    
+                    const rowValues = row.map(cell => cell?.toString() || '');
+                    text += rowValues.join('\t') + '\n';
+                    
+                    html += '<tr>';
+                    rowValues.forEach(cell => {
+                      html += `<td>${cell}</td>`;
+                    });
+                    html += '</tr>';
+                  });
+                }
+                
+                html += '</table>';
+                resolve({ text, html });
+              } catch (error) {
+                console.error('CSV解析結果の処理中にエラーが発生しました:', error);
+                reject(new Error('CSVデータの処理に失敗しました'));
+              }
             },
             error: (error: Error) => {
+              console.error('CSVの解析中にエラーが発生しました:', error);
               reject(error);
             }
           });
+        } catch (error) {
+          console.error('CSVファイルの処理中にエラーが発生しました:', error);
+          reject(new Error('CSVファイルの処理に失敗しました'));
         }
       };
+      
+      reader.onerror = () => {
+        reject(new Error('CSVファイルの読み込みに失敗しました'));
+      };
+      
       reader.readAsText(file);
     });
   };
@@ -170,238 +243,268 @@ export default function FileConverter() {
   const extractFromText = async (file: File): Promise<FileData> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
+      
       reader.onload = (event) => {
-        if (event.target) {
+        if (!event.target || !event.target.result) {
+          reject(new Error('テキストファイルの読み込みに失敗しました'));
+          return;
+        }
+        
+        try {
           const text = event.target.result as string;
           const html = `<pre>${text}</pre>`;
           resolve({ text, html });
+        } catch (error) {
+          console.error('テキストファイルの処理中にエラーが発生しました:', error);
+          reject(new Error('テキストファイルの処理に失敗しました'));
         }
       };
-      reader.onerror = () => reject(new Error('Failed to read text file'));
+      
+      reader.onerror = () => {
+        reject(new Error('テキストファイルの読み込みに失敗しました'));
+      };
+      
       reader.readAsText(file);
     });
   };
 
+  // テキストをCanvasにレンダリングしてPDFに追加する関数
+  const renderTextToPDF = async (pdfDoc: PDFDocument, text: string, title?: string) => {
+    try {
+      const pageWidth = 595;  // A4サイズの幅（ポイント）
+      const pageHeight = 842; // A4サイズの高さ（ポイント）
+      const margin = 50;
+      const fontSize = 11;
+      const lineHeight = fontSize * 1.5;
+      
+      // テキストを行に分割
+      const lines = text.split('\n');
+      
+      // 先頭のページを作成
+      let page = pdfDoc.addPage([pageWidth, pageHeight]);
+      let y = pageHeight - margin;
+      
+      // Canvas要素を作成（テキストレンダリング用）
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Canvas 2D context could not be created');
+      
+      canvas.width = pageWidth - 2 * margin;
+      canvas.height = lineHeight;
+      context.font = `${fontSize}px Arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "メイリオ", Meiryo, sans-serif`;
+      context.fillStyle = 'black';
+      context.textBaseline = 'top';
+      
+      // タイトルがある場合は追加（画像として）
+      if (title) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.font = `bold ${fontSize + 2}px Arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "メイリオ", Meiryo, sans-serif`;
+        context.fillText(title, 0, 0);
+        
+        const titleImageData = canvas.toDataURL('image/png');
+        const titleImage = await pdfDoc.embedPng(titleImageData);
+        
+        page.drawImage(titleImage, {
+          x: margin,
+          y: y - lineHeight,
+          width: canvas.width,
+          height: lineHeight
+        });
+        
+        y -= lineHeight * 2;
+        
+        // フォントを通常のサイズに戻す
+        context.font = `${fontSize}px Arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "メイリオ", Meiryo, sans-serif`;
+      }
+      
+      // 各行をキャンバスにレンダリングしてPDFに画像として埋め込む
+      for (let i = 0; i < lines.length; i++) {
+        // ページの下端に達したら新しいページを作成
+        if (y < margin + lineHeight) {
+          page = pdfDoc.addPage([pageWidth, pageHeight]);
+          y = pageHeight - margin;
+        }
+        
+        // キャンバスをクリアしてテキストを描画
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.fillText(lines[i] || ' ', 0, 0);
+        
+        // キャンバスの内容を画像として取得
+        const lineImageData = canvas.toDataURL('image/png');
+        const lineImage = await pdfDoc.embedPng(lineImageData);
+        
+        // 画像をPDFに追加
+        page.drawImage(lineImage, {
+          x: margin,
+          y: y - lineHeight,
+          width: canvas.width,
+          height: lineHeight
+        });
+        
+        // 次の行の位置に移動
+        y -= lineHeight;
+      }
+    } catch (error) {
+      console.error('PDFへのテキスト追加中にエラーが発生しました:', error);
+      throw new Error('PDFへのテキスト追加に失敗しました');
+    }
+  };
+  
+  // Word文書の処理
+  const processWordDocument = async (pdfDoc: PDFDocument, file: File) => {
+    try {
+      const { text } = await extractFromWord(file);
+      await renderTextToPDF(pdfDoc, text, file.name);
+    } catch (error) {
+      console.error('Word文書の処理中にエラーが発生しました:', error);
+      const page = pdfDoc.addPage();
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      page.drawText(`Failed to process Word document: ${file.name}`, {
+        x: 50,
+        y: page.getHeight() - 50,
+        size: 12,
+        font: font,
+        color: rgb(0, 0, 0),
+      });
+    }
+  };
+
+  // PDF変換処理
   const handleDownloadPDF = async () => {
     setLoading(true);
     setError(null);
     
     try {
       const pdfDoc = await PDFDocument.create();
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
       
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const fileType = fileTypes[i];
         
-        switch (fileType) {
-          case 'image': {
-            const imgBytes = await file.arrayBuffer();
-            let img;
-            
-            if (file.type === 'image/png') {
-              img = await pdfDoc.embedPng(imgBytes);
-            } else if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
-              img = await pdfDoc.embedJpg(imgBytes);
-            } else {
-              // 他の画像形式は単純にテキストとして扱う
-              const page = pdfDoc.addPage();
-              page.drawText(`Unsupported image format: ${file.type}`, {
-                x: 50,
-                y: page.getHeight() - 50,
-                size: 12,
-              });
-              continue;
-            }
-            
-            const dims = img.scale(1);
-            const page = pdfDoc.addPage([dims.width, dims.height]);
-            page.drawImage(img, {
-              x: 0,
-              y: 0,
-              width: dims.width,
-              height: dims.height,
-            });
-            break;
-          }
-          
-          case 'pdf': {
-            // PDFファイルを既存のPDFに追加
-            const pdfBytes = await file.arrayBuffer();
-            const externalPdfDoc = await PDFDocument.load(pdfBytes);
-            const copiedPages = await pdfDoc.copyPages(externalPdfDoc, externalPdfDoc.getPageIndices());
-            copiedPages.forEach(page => pdfDoc.addPage(page));
-            break;
-          }
-          
-          case 'word': {
-            try {
-              // 修正3: 未使用の変数 html を削除
-              const { text } = await extractFromWord(file);
-              const page = pdfDoc.addPage();
-              const fontSize = 12;
-              const lineHeight = fontSize * 1.2;
-              const margin = 50;
-              const width = page.getWidth() - margin * 2;
-              const maxLinesPerPage = Math.floor((page.getHeight() - margin * 2) / lineHeight);
-              
-              // テキストを行に分割
-              const lines = [];
-              let currentLine = '';
-              const words = text.split(' ');
-              
-              for (const word of words) {
-                const testLine = currentLine + (currentLine ? ' ' : '') + word;
-                // 簡易的な行の長さチェック（正確なフォント幅計測ではない）
-                if (testLine.length * fontSize/2 > width) {
-                  lines.push(currentLine);
-                  currentLine = word;
+        try {
+          switch (fileType) {
+            case 'image': {
+              try {
+                const imgBytes = await file.arrayBuffer();
+                let img;
+                
+                if (file.type === 'image/png') {
+                  img = await pdfDoc.embedPng(imgBytes);
+                } else if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+                  img = await pdfDoc.embedJpg(imgBytes);
                 } else {
-                  currentLine = testLine;
-                }
-              }
-              if (currentLine) lines.push(currentLine);
-              
-              // 複数ページに分割して描画
-              let currentPage = page;
-              let y = currentPage.getHeight() - margin;
-              
-              for (let i = 0; i < lines.length; i++) {
-                if (i > 0 && i % maxLinesPerPage === 0) {
-                  currentPage = pdfDoc.addPage();
-                  y = currentPage.getHeight() - margin;
+                  // 他の画像形式は単純にテキストとして扱う
+                  // エラーメッセージも画像として生成する
+                  await renderTextToPDF(pdfDoc, `Unsupported image format: ${file.type}`);
+                  continue;
                 }
                 
-                currentPage.drawText(lines[i], {
-                  x: margin,
-                  y: y - (i % maxLinesPerPage) * lineHeight,
-                  size: fontSize,
-                  color: rgb(0, 0, 0),
+                // 画像サイズに基づいてページを作成
+                const imgDims = img.scale(1);
+                // あまりに大きい画像の場合はスケールダウン
+                const maxWidth = 500;
+                const maxHeight = 700;
+                let scaleFactor = 1;
+                
+                if (imgDims.width > maxWidth || imgDims.height > maxHeight) {
+                  const widthScale = maxWidth / imgDims.width;
+                  const heightScale = maxHeight / imgDims.height;
+                  scaleFactor = Math.min(widthScale, heightScale);
+                }
+                
+                const finalWidth = imgDims.width * scaleFactor;
+                const finalHeight = imgDims.height * scaleFactor;
+                
+                // ページサイズは画像より少し大きく
+                const page = pdfDoc.addPage([
+                  Math.max(finalWidth + 100, 595), // 少なくともA4の幅
+                  Math.max(finalHeight + 100, 842) // 少なくともA4の高さ
+                ]);
+                
+                // 中央に配置
+                const x = (page.getWidth() - finalWidth) / 2;
+                const y = (page.getHeight() - finalHeight) / 2;
+                
+                page.drawImage(img, {
+                  x,
+                  y,
+                  width: finalWidth,
+                  height: finalHeight,
                 });
+              } catch (error) {
+                console.error('画像処理中のエラー:', error);
+                await renderTextToPDF(pdfDoc, `Failed to process image: ${file.name}`);
               }
-            } catch (e) {
-              console.error('Word処理中のエラー:', e);
-              const page = pdfDoc.addPage();
-              page.drawText(`Failed to process Word document: ${file.name}`, {
-                x: 50,
-                y: page.getHeight() - 50,
-                size: 12,
-              });
+              break;
             }
-            break;
-          }
-          
-          case 'excel':
-          case 'csv': {
-            try {
-              let data;
-              if (fileType === 'excel') {
-                data = await extractFromExcel(file);
-              } else {
-                data = await extractFromCSV(file);
+            
+            case 'pdf': {
+              try {
+                // PDFファイルを既存のPDFに追加
+                const pdfBytes = await file.arrayBuffer();
+                const externalPdfDoc = await PDFDocument.load(pdfBytes);
+                const copiedPages = await pdfDoc.copyPages(externalPdfDoc, externalPdfDoc.getPageIndices());
+                copiedPages.forEach(page => pdfDoc.addPage(page));
+              } catch (error) {
+                console.error('PDF処理中のエラー:', error);
+                await renderTextToPDF(pdfDoc, `Failed to process PDF: ${file.name}`);
               }
-              
-              const page = pdfDoc.addPage();
-              const fontSize = 10;
-              const lineHeight = fontSize * 1.2;
-              const margin = 50;
-              const maxLinesPerPage = Math.floor((page.getHeight() - margin * 2) / lineHeight);
-              
-              // テキストを行に分割
-              const lines = data.text.split('\n');
-              
-              // 複数ページに分割して描画
-              let currentPage = page;
-              let y = currentPage.getHeight() - margin;
-              
-              // タイトルを表示
-              currentPage.drawText(`${file.name}`, {
-                x: margin,
-                y: y,
-                size: fontSize + 2,
-                color: rgb(0, 0, 0),
-              });
-              
-              y -= lineHeight * 2;
-              
-              for (let i = 0; i < lines.length; i++) {
-                if (i > 0 && (i % maxLinesPerPage === 0 || y - lineHeight < margin)) {
-                  currentPage = pdfDoc.addPage();
-                  y = currentPage.getHeight() - margin;
-                }
-                
-                currentPage.drawText(lines[i], {
-                  x: margin,
-                  y: y,
-                  size: fontSize,
-                  color: rgb(0, 0, 0),
-                });
-                
-                y -= lineHeight;
-              }
-            } catch (e) {
-              console.error('表計算処理中のエラー:', e);
-              const page = pdfDoc.addPage();
-              page.drawText(`Failed to process spreadsheet: ${file.name}`, {
-                x: 50,
-                y: page.getHeight() - 50,
-                size: 12,
-              });
+              break;
             }
-            break;
-          }
-          
-          case 'text': {
-            try {
-              // 修正3: 未使用の変数 html を削除
-              const { text } = await extractFromText(file);
-              const page = pdfDoc.addPage();
-              const fontSize = 11;
-              const lineHeight = fontSize * 1.2;
-              const margin = 50;
-              const maxLinesPerPage = Math.floor((page.getHeight() - margin * 2) / lineHeight);
-              
-              // テキストを行に分割
-              const lines = text.split('\n');
-              
-              // 複数ページに分割して描画
-              let currentPage = page;
-              let y = currentPage.getHeight() - margin;
-              
-              for (let i = 0; i < lines.length; i++) {
-                if (i > 0 && i % maxLinesPerPage === 0) {
-                  currentPage = pdfDoc.addPage();
-                  y = currentPage.getHeight() - margin;
-                }
-                
-                currentPage.drawText(lines[i], {
-                  x: margin,
-                  y: y - (i % maxLinesPerPage) * lineHeight,
-                  size: fontSize,
-                  color: rgb(0, 0, 0),
-                });
-              }
-            } catch (e) {
-              console.error('テキスト処理中のエラー:', e);
-              const page = pdfDoc.addPage();
-              page.drawText(`Failed to process text file: ${file.name}`, {
-                x: 50,
-                y: page.getHeight() - 50,
-                size: 12,
-              });
+            
+            case 'word': {
+              await processWordDocument(pdfDoc, file);
+              break;
             }
-            break;
+            
+            case 'excel': {
+              try {
+                const { text } = await extractFromExcel(file);
+                await renderTextToPDF(pdfDoc, text, file.name);
+              } catch (error) {
+                console.error('Excel処理中のエラー:', error);
+                await renderTextToPDF(pdfDoc, `Failed to process Excel file: ${file.name}`);
+              }
+              break;
+            }
+            
+            case 'csv': {
+              try {
+                const { text } = await extractFromCSV(file);
+                await renderTextToPDF(pdfDoc, text, file.name);
+              } catch (error) {
+                console.error('CSV処理中のエラー:', error);
+                await renderTextToPDF(pdfDoc, `Failed to process CSV file: ${file.name}`);
+              }
+              break;
+            }
+            
+            case 'text': {
+              try {
+                const { text } = await extractFromText(file);
+                await renderTextToPDF(pdfDoc, text, file.name);
+              } catch (error) {
+                console.error('テキスト処理中のエラー:', error);
+                await renderTextToPDF(pdfDoc, `Failed to process text file: ${file.name}`);
+              }
+              break;
+            }
+            
+            default: {
+              // サポートされていないファイル形式
+              await renderTextToPDF(pdfDoc, `Unsupported file type: ${file.type}`);
+            }
           }
-          
-          default: {
-            // サポートされていないファイル形式
-            const page = pdfDoc.addPage();
-            page.drawText(`Unsupported file type: ${file.type}`, {
-              x: 50,
-              y: page.getHeight() - 50,
-              size: 12,
-            });
-          }
+        } catch (error) {
+          console.error(`ファイル処理中のエラー (${file.name}):`, error);
+          await renderTextToPDF(pdfDoc, `Error processing file: ${file.name}`);
         }
+      }
+      
+      // PDFファイルが空の場合（ページがない場合）は空のページを追加
+      if (pdfDoc.getPageCount() === 0) {
+        pdfDoc.addPage();
       }
       
       const pdfBytes = await pdfDoc.save();
@@ -412,16 +515,21 @@ export default function FileConverter() {
       link.href = url;
       link.download = 'converted_document.pdf';
       link.click();
-      URL.revokeObjectURL(url);
+      
+      // メモリリーク防止のためURLを解放
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
       
     } catch (err) {
       console.error('PDF生成中のエラー:', err);
-      setError('PDFの生成中にエラーが発生しました。');
+      setError('PDFの生成中にエラーが発生しました。詳細はコンソールを確認してください。');
     } finally {
       setLoading(false);
     }
   };
   
+  // ファイル削除処理
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
     setPreviewUrls(prev => prev.filter((_, i) => i !== index));
@@ -470,13 +578,11 @@ export default function FileConverter() {
                 <div className="bg-gray-100 rounded shadow p-2 h-full flex flex-col">
                   <div className="relative pt-[100%] bg-white rounded mb-2 overflow-hidden">
                     {fileTypes[index] === 'image' ? (
-                      // 修正4: img タグの代わりに Next.js の Image コンポーネントを使用
                       <div className="absolute top-0 left-0 w-full h-full">
-                        <Image
+                        <img
                           src={previewUrls[index]}
                           alt={`preview-${index}`}
-                          fill
-                          className="object-contain"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                     ) : (
@@ -485,7 +591,10 @@ export default function FileConverter() {
                       </div>
                     )}
                     <button
-                      onClick={() => removeFile(index)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // イベントの伝播を停止
+                        removeFile(index);
+                      }}
                       className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       ×
