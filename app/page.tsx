@@ -21,7 +21,7 @@ export default function HomePage() {
     },
     {
       title: "PDF変換ツール",
-      description: "画像、テキスト、Word、Excelなど様々なファイルをPDFに変換。ドラッグ＆ドロップで簡単にファイルを変換できます。",
+      description: "画像ファイルをPDFに変換。ドラッグ＆ドロップで簡単にファイルを変換できます。",
       icon: "📄",
       link: "/snapPDF",
       color: "bg-red-100 hover:bg-red-200",
