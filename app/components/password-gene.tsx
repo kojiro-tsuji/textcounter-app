@@ -27,10 +27,14 @@ export default function PasswordGenerator() {
     if (charset === "") charset = "abcdefghijklmnopqrstuvwxyz";
 
     const len = Number(length) || 8;
+    // 暗号論的に安全な乱数を使用（偏りを避けるため範囲外の値は棄却）
+    const limit = Math.floor(0x100000000 / charset.length) * charset.length;
+    const buf = new Uint32Array(1);
     let generated = "";
-    for (let i = 0; i < len; i++) {
-      const randomIndex = Math.floor(Math.random() * charset.length);
-      generated += charset[randomIndex];
+    while (generated.length < len) {
+      crypto.getRandomValues(buf);
+      if (buf[0] >= limit) continue;
+      generated += charset[buf[0] % charset.length];
     }
     setPassword(generated);
     setIsGenerated(true);
