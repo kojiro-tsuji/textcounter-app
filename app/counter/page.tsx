@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import TextCounter from '../components/TextCounter';
 import Layout from '../components/Layout';
+import OtherTools from '../components/OtherTools';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
@@ -35,6 +36,25 @@ export const metadata: Metadata = {
   category: "tools",
 };
 
+const faqs = [
+  {
+    q: "改行やスペースは数えますか？",
+    a: "最初は数えない設定です。「スペース・改行も数える」をオンにすると、空白と改行も1文字ずつ数えます。",
+  },
+  {
+    q: "句読点や記号は？",
+    a: "「、」「。」「!」なども1文字として数えます。",
+  },
+  {
+    q: "全角と半角はどう分けていますか？",
+    a: "英数字と一般的な記号（ASCII）を半角、それ以外（日本語、全角英数字など）を全角として数えています。",
+  },
+  {
+    q: "入力した文章は保存されますか？",
+    a: "いいえ。数えるのはブラウザの中だけで、どこにも送られません。ページを閉じれば消えます。",
+  },
+];
+
 export default function Counter() {
   return (
     <Layout>
@@ -67,121 +87,47 @@ export default function Counter() {
         }}
       />
 
-      <div className="min-h-screen bg-gray-50">
-        <div className="flex justify-center">
-          {/* メインコンテンツ */}
-          <div className="w-full max-w-4xl px-4">
-            <div className="py-16">
-              <TextCounter />
-            </div>
-            
-            {/* この文字数カウンターの下に追加するセクション */}
-            <section className="w-full max-w-4xl mx-auto mt-12 p-4">
-              <div className="bg-white shadow-lg rounded-lg p-6">
-                <h2 className="text-2xl font-bold mb-6 text-center">文字数カウンターの使い方と活用シーン</h2>
-                
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold mb-3">基本的な使い方</h3>
-                  <ol className="list-decimal pl-6 space-y-2">
-                    <li>上部のテキストエリアに文章を入力またはコピー＆ペーストしてください。</li>
-                    <li>文字数が自動的にカウントされ、下部に表示されます。</li>
-                    <li>「スペースを含める」「全角文字」「半角文字」のオプションを切り替えて、より細かくカウントを調整できます。</li>
-                    <li>「コピー」ボタンでテキストをクリップボードにコピーできます。</li>
-                    <li>「クリア」ボタンでテキストをリセットできます。</li>
-                  </ol>
-                </div>
-                
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold mb-3">便利な機能</h3>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li><strong>スペースのカウント切替：</strong>「スペースを含める」のチェックボックスをオン/オフすることで、スペースを文字数に含めるかどうかを選択できます。</li>
-                    <li><strong>文字種別カウント：</strong>「全角文字」と「半角文字」のチェックボックスを使って、特定の種類の文字だけをカウントすることができます。</li>
-                    <li><strong>コピー機能：</strong>編集したテキストを簡単にコピーして他の場所で利用できます。</li>
-                    <li><strong>リアルタイムカウント：</strong>入力中も文字数が即座に更新されます。</li>
-                  </ul>
-                </div>
-                
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold mb-3">活用シーン</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <h4 className="text-lg font-medium mb-2">📝 SNS投稿の作成</h4>
-                      <p>Twitter（X）やInstagramなど、文字数制限のあるSNSへの投稿を作成する際に便利です。スペースを含めるかどうかの設定も、プラットフォームごとの文字数カウント方法に合わせて調整できます。</p>
-                    </div>
-                    
-                    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <h4 className="text-lg font-medium mb-2">📊 SEO記事の最適化</h4>
-                      <p>ブログ記事やWebコンテンツのSEO最適化において、適切な文字数を維持するために活用できます。検索エンジンが好む2,000〜3,000文字の記事を書く際の目安として使えます。</p>
-                    </div>
-                    
-                    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <h4 className="text-lg font-medium mb-2">📚 レポートや論文の作成</h4>
-                      <p>学校や大学のレポート、論文などで指定された文字数に合わせて執筆する際に役立ちます。全角/半角の設定を使って、より正確に日本語の文字数を把握できます。</p>
-                    </div>
-                    
-                    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <h4 className="text-lg font-medium mb-2">✍️ 履歴書・職務経歴書の作成</h4>
-                      <p>就職・転職活動での履歴書や職務経歴書の自己PRや志望動機を書く際に、適切な文字数に収めるのに役立ちます。字数制限がある場合でも、このツールで効率的に管理できます。</p>
-                    </div>
-                    
-                    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <h4 className="text-lg font-medium mb-2">📱 メールや問い合わせフォーム</h4>
-                      <p>文字数制限のあるお問い合わせフォームやメールを作成する際に、制限内に収まっているか確認できます。ビジネスメールでは簡潔さが重要ですが、このツールで適切な長さを保てます。</p>
-                    </div>
-                    
-                    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <h4 className="text-lg font-medium mb-2">🎓 小論文・エッセイの執筆</h4>
-                      <p>入試や資格試験の小論文、エッセイコンテストなどで指定された文字数内で作品を仕上げる際に最適です。執筆中に随時文字数を確認しながら作業できます。</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white shadow-lg rounded-lg p-6 mt-8">
-                <h2 className="text-2xl font-bold mb-6 text-center">よくある質問</h2>
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Q: 全角と半角の違いは何ですか？</h3>
-                    <p>A: 全角文字は主に日本語の漢字、ひらがな、カタカナなどで、一文字が正方形の領域を占めます。半角文字は英数字や記号など、全角の半分の幅を持つ文字です。このツールでは両方を個別にカウントする機能があります。</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Q: 句読点や改行も文字数にカウントされますか？</h3>
-                    <p>A: はい、デフォルト設定では句読点や改行も1文字としてカウントされます。多くの文章制限では、これらも文字数に含まれるためです。</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Q: 文字数の目安はどのくらいですか？</h3>
-                    <p>A: 用途によって異なりますが、一般的な目安は以下の通りです：</p>
-                    <ul className="list-disc pl-6 mt-2">
-                      <li>Twitterの投稿：最大280文字</li>
-                      <li>ブログ記事の見出し：10〜60文字程度</li>
-                      <li>SEO最適化された記事：2,000〜3,000文字</li>
-                      <li>履歴書の自己PR：200〜400文字程度</li>
-                      <li>小論文：800〜1,200文字程度</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Q: オフラインでも使用できますか？</h3>
-                    <p>A: このツールはブラウザ上で動作しますが、一度ページを読み込んだ後はインターネット接続がなくても使用可能です。入力したテキストがサーバーに送信されることはなく、すべての処理はお使いのデバイス内で完結します。</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-            {/* フッターCTA */}
-            <div className="max-w-4xl mx-auto text-center">
-              <p className="text-gray-600 mb-4">他にも様々な便利ツールを提供しています</p>
-              <a href="/" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                他のツールを見る
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </a>
-            </div>
+      <main className="max-w-[800px] mx-auto px-6 pt-14 pb-[88px]">
+        <h1 className="text-[40px] font-black">文字数カウンター</h1>
+        <p className="mt-3.5 mb-9 text-[17px] leading-loose text-sub">
+          文章を貼り付けると、その場で文字数を数えます。入力した文字はこのブラウザの外に出ません。
+        </p>
+
+        <TextCounter />
+
+        <section className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="border-2 border-ink rounded-2xl p-6">
+            <h2 className="text-xl font-black mb-4">使い方</h2>
+            <ol className="list-decimal pl-5 space-y-2.5 text-[15px] leading-relaxed">
+              <li>文章を貼り付けるか、そのまま入力する。数字はリアルタイムで変わります。</li>
+              <li>数え方を選ぶ。提出先が「空白も含めて○字」なら、スペース・改行もオンに。</li>
+              <li>書き直した文章は「コピー」でまとめて持っていけます。</li>
+            </ol>
           </div>
-        </div>
-      </div>
+          <div className="border-2 border-ink rounded-2xl p-6">
+            <h2 className="text-xl font-black mb-4">こんなときに</h2>
+            <ul className="list-disc pl-5 space-y-2.5 text-[15px] leading-relaxed">
+              <li>レポートや小論文の字数チェック</li>
+              <li>エントリーシートの「400字以内」に収める</li>
+              <li>SNS投稿やメタディスクリプションの長さ調整</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="mt-14">
+          <h2 className="text-xl font-black mb-4">よくある質問</h2>
+          <div className="space-y-3">
+            {faqs.map((faq) => (
+              <div key={faq.q} className="border-2 border-ink rounded-[14px] px-5 py-[18px]">
+                <h3 className="font-black mb-1.5">{faq.q}</h3>
+                <p className="text-[15px] leading-relaxed text-sub">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <OtherTools current="/counter" />
+      </main>
     </Layout>
   );
 }

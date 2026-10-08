@@ -1,67 +1,63 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Copy, Check, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Copy, Check, Eye, EyeOff } from "lucide-react";
+
+const CHARSETS = [
+  { key: "upper", label: "大文字 A-Z", chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" },
+  { key: "lower", label: "小文字 a-z", chars: "abcdefghijklmnopqrstuvwxyz" },
+  { key: "number", label: "数字 0-9", chars: "0123456789" },
+  { key: "symbol", label: "記号 !@#$", chars: "!@#$%^&*()_+-=[]{}|;:,.<>?" },
+] as const;
+
+type CharsetKey = (typeof CHARSETS)[number]["key"];
+
+const STRENGTH_LABELS = ["", "とても弱い", "弱い", "ふつう", "強い", "とても強い"];
 
 export default function PasswordGenerator() {
   const [password, setPassword] = useState("");
-  const [length, setLength] = useState(8);
-  const [includeNumbers, setIncludeNumbers] = useState(true);
-  const [includeSymbols, setIncludeSymbols] = useState(false);
-  const [includeUppercase, setIncludeUppercase] = useState(true);
-  const [includeLowercase, setIncludeLowercase] = useState(true);
+  const [length, setLength] = useState(16);
+  const [enabled, setEnabled] = useState<Record<CharsetKey, boolean>>({
+    upper: true,
+    lower: true,
+    number: true,
+    symbol: false,
+  });
   const [copied, setCopied] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [strength, setStrength] = useState(0);
-  const [isGenerated, setIsGenerated] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
 
   // パスワード生成関数
   const generatePassword = () => {
-    let charset = "";
-    if (includeLowercase) charset += "abcdefghijklmnopqrstuvwxyz";
-    if (includeUppercase) charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    if (includeNumbers) charset += "0123456789";
-    if (includeSymbols) charset += "!@#$%^&*()_+-=[]{}|;:,.<>?";
+    let charset = CHARSETS.filter((c) => enabled[c.key]).map((c) => c.chars).join("");
 
     // 文字種が選択されていない場合は小文字をデフォルトで使用
-    if (charset === "") charset = "abcdefghijklmnopqrstuvwxyz";
+    if (charset === "") charset = CHARSETS[1].chars;
 
-    const len = Number(length) || 8;
     // 暗号論的に安全な乱数を使用（偏りを避けるため範囲外の値は棄却）
     const limit = Math.floor(0x100000000 / charset.length) * charset.length;
     const buf = new Uint32Array(1);
     let generated = "";
-    while (generated.length < len) {
+    while (generated.length < length) {
       crypto.getRandomValues(buf);
       if (buf[0] >= limit) continue;
       generated += charset[buf[0] % charset.length];
     }
     setPassword(generated);
-    setIsGenerated(true);
+    setCopied(false);
   };
 
-  // パスワードの強度を計算
-  useEffect(() => {
-    if (!password) {
-      setStrength(0);
-      return;
-    }
-
+  // パスワードの強度（0〜5）
+  const strength = useMemo(() => {
+    if (!password) return 0;
     let score = 0;
-    
-    // 長さによるスコア
     if (password.length >= 8) score += 1;
     if (password.length >= 12) score += 1;
     if (password.length >= 16) score += 1;
-    
-    // 文字種によるスコア
     if (/[a-z]/.test(password)) score += 1;
     if (/[A-Z]/.test(password)) score += 1;
     if (/[0-9]/.test(password)) score += 1;
     if (/[^a-zA-Z0-9]/.test(password)) score += 1;
-    
-    // 最大10点中の評価
-    setStrength(Math.min(score, 5));
+    return Math.min(score, 5);
   }, [password]);
 
   // クリップボードにコピー
@@ -73,142 +69,91 @@ export default function PasswordGenerator() {
     }
   };
 
-  // パスワード強度のラベルと色
-  const getStrengthLabel = () => {
-    switch (strength) {
-      case 0: return { label: "評価なし", color: "bg-gray-200" };
-      case 1: return { label: "非常に弱い", color: "bg-red-500" };
-      case 2: return { label: "弱い", color: "bg-orange-500" };
-      case 3: return { label: "普通", color: "bg-yellow-500" };
-      case 4: return { label: "強い", color: "bg-green-500" };
-      case 5: return { label: "非常に強い", color: "bg-green-700" };
-      default: return { label: "評価なし", color: "bg-gray-200" };
-    }
-  };
-
-  const strengthInfo = getStrengthLabel();
-
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg">
-        <div className="mb-8">
-          <div className="relative">
-            <div className="flex items-center mb-3">
-              <input
-                type={showPassword ? "text" : "password"}
-                readOnly
-                value={password}
-                placeholder="パスワードを生成するにはボタンをクリックしてください"
-                className="w-full p-4 pr-24 border border-gray-300 rounded-lg bg-gray-50 text-xl font-mono"
-              />
-              <div className="absolute right-3 flex space-x-3">
-                {isGenerated && (
-                  <>
-                    <button
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
-                      aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
-                      disabled={!isGenerated}
-                    >
-                      {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
-                    </button>
-                    <button
-                      onClick={copyToClipboard}
-                      className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
-                      aria-label="クリップボードにコピー"
-                      disabled={!isGenerated}
-                    >
-                      {copied ? <Check size={22} className="text-green-500" /> : <Copy size={22} />}
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-            
-            {isGenerated && (
-              <div className="flex items-center">
-                <div className="text-sm font-medium text-gray-700 mr-3 min-w-24">強度: {strengthInfo.label}</div>
-                <div className="flex-1 h-2.5 bg-gray-200 rounded-full overflow-hidden">
-                  <div className={`h-full ${strengthInfo.color} transition-all duration-300`} style={{ width: `${(strength / 5) * 100}%` }}></div>
-                </div>
-              </div>
-            )}
-          </div>
+    <section className="border-2 border-ink rounded-[20px] shadow-[6px_6px_0_#111111] overflow-hidden bg-white">
+      <div className="bg-mint border-b-2 border-ink p-6 flex flex-wrap items-center gap-3">
+        <div
+          className={`flex-[1_1_320px] min-w-0 font-mono text-2xl md:text-[28px] tracking-wide break-all ${
+            password ? "" : "text-sub text-lg md:text-lg font-sans font-bold tracking-normal"
+          }`}
+          aria-live="polite"
+        >
+          {password ? (showPassword ? password : "•".repeat(password.length)) : "「生成する」を押すとここに出ます"}
         </div>
-
-        <div className="space-y-6">
-          <div>
-            <label htmlFor="password-length" className="block text-sm font-medium text-gray-700 mb-2">
-              パスワードの長さ: <span className="font-bold text-blue-600">{length}</span> 文字
-            </label>
-            <input
-              id="password-length"
-              type="range"
-              min={4}
-              max={32}
-              value={length}
-              onChange={(e) => setLength(Number(e.target.value))}
-              className="w-full h-2.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-            />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>4</span>
-              <span>12</span>
-              <span>20</span>
-              <span>32</span>
-            </div>
+        {password && (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
+              className="w-12 h-12 border-2 border-ink bg-white rounded-xl flex items-center justify-center"
+            >
+              {showPassword ? <EyeOff size={22} strokeWidth={2.2} /> : <Eye size={22} strokeWidth={2.2} />}
+            </button>
+            <button
+              type="button"
+              onClick={copyToClipboard}
+              className="h-12 px-5 border-2 border-ink bg-ink text-white rounded-xl font-bold flex items-center gap-2"
+            >
+              {copied ? <Check size={18} strokeWidth={2.6} /> : <Copy size={18} strokeWidth={2.2} />}
+              {copied ? "コピーしました" : "コピー"}
+            </button>
           </div>
-
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-gray-700">含める文字</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includeUppercase}
-                  onChange={(e) => setIncludeUppercase(e.target.checked)}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500"
-                />
-                <span>大文字 (A-Z)</span>
-              </label>
-              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includeLowercase}
-                  onChange={(e) => setIncludeLowercase(e.target.checked)}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500"
-                />
-                <span>小文字 (a-z)</span>
-              </label>
-              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includeNumbers}
-                  onChange={(e) => setIncludeNumbers(e.target.checked)}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500"
-                />
-                <span>数字 (0-9)</span>
-              </label>
-              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includeSymbols}
-                  onChange={(e) => setIncludeSymbols(e.target.checked)}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500"
-                />
-                <span>記号 (!@#$%...)</span>
-              </label>
-            </div>
+        )}
+        {password && (
+          <div className="basis-full text-sm font-bold">
+            強さ：
+            <span className="px-2.5 py-0.5 border-2 border-ink rounded-full bg-white">{STRENGTH_LABELS[strength]}</span>
           </div>
-
-          <button
-            onClick={generatePassword}
-            className="w-full flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-lg shadow transition-colors font-medium text-lg"
-          >
-            <RefreshCw size={20} className="mr-2" />
-            {isGenerated ? "新しいパスワードを生成" : "パスワードを生成"}
-          </button>
-        </div>
+        )}
       </div>
-    </div>
+
+      <div className="px-6 py-7 flex flex-col gap-7">
+        <div>
+          <div className="flex justify-between items-baseline mb-2.5">
+            <label htmlFor="password-length" className="font-bold">長さ</label>
+            <span className="text-[22px] font-black">
+              {length}
+              <span className="text-sm font-bold"> 文字</span>
+            </span>
+          </div>
+          <input
+            id="password-length"
+            type="range"
+            min={4}
+            max={32}
+            value={length}
+            onChange={(e) => setLength(Number(e.target.value))}
+            className="w-full accent-ink cursor-pointer"
+          />
+        </div>
+
+        <fieldset>
+          <legend className="font-bold mb-3">使う文字</legend>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+            {CHARSETS.map((c) => (
+              <label
+                key={c.key}
+                className={`flex items-center gap-2.5 min-h-[52px] px-4 border-2 border-ink rounded-xl font-bold cursor-pointer transition-colors ${
+                  enabled[c.key] ? "bg-pop" : "bg-white"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={enabled[c.key]}
+                  onChange={(e) => setEnabled((prev) => ({ ...prev, [c.key]: e.target.checked }))}
+                  className="w-[18px] h-[18px] accent-ink"
+                />
+                {c.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <button type="button" onClick={generatePassword} className="btn-pop h-[60px] text-[19px]">
+          {password ? "もう一度生成する" : "生成する"}
+        </button>
+      </div>
+    </section>
   );
 }

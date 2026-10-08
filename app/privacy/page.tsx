@@ -4,18 +4,18 @@ export default function Privacy() {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="prose max-w-none">
-          <h1 className="text-3xl font-bold mb-8">プライバシーポリシー</h1>
+        <div className="leading-loose">
+          <h1 className="text-[40px] font-black mb-8">プライバシーポリシー</h1>
           
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">1. 基本方針</h2>
+            <h2 className="text-xl font-black mb-4">1. 基本方針</h2>
             <p>
               当サイト「便利ツール集」は、利用者のプライバシーを尊重し、個人情報の保護に努めます。本プライバシーポリシーでは、当サイトが提供する全てのツール（文字数カウンター、パスワード生成ツール、PDF変換ツールを含む）における個人情報の取り扱いについて説明します。
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">2. 収集する情報</h2>
+            <h2 className="text-xl font-black mb-4">2. 収集する情報</h2>
             <p>
               当サイトでは、以下の情報を収集する場合があります：
             </p>
@@ -36,7 +36,7 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">3. 情報の利用目的</h2>
+            <h2 className="text-xl font-black mb-4">3. 情報の利用目的</h2>
             <p>
               収集した情報は、以下の目的で利用されます：
             </p>
@@ -51,7 +51,7 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">4. データセキュリティ</h2>
+            <h2 className="text-xl font-black mb-4">4. データセキュリティ</h2>
             <p>
               当サイトでは、ユーザーデータのセキュリティを最優先に考え、以下の対策を実施しています：
             </p>
@@ -64,14 +64,14 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">5. 広告について</h2>
+            <h2 className="text-xl font-black mb-4">5. 広告について</h2>
             <p>
               当サイトでは、第三者配信の広告サービス（Google AdSense）を利用しています。
               これらのサービスでは、ユーザーの興味に応じた商品やサービスの広告を表示するため、Cookieを使用しています。
             </p>
             <p className="mt-4">
               Cookieを無効にする方法やGoogleアドセンスに関する詳細は、
-              <a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+              <a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer" className="font-bold underline">
                 Googleポリシーと規約
               </a>
               をご確認ください。
@@ -79,7 +79,7 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">6. アクセス解析ツール</h2>
+            <h2 className="text-xl font-black mb-4">6. アクセス解析ツール</h2>
             <p>
               当サイトでは、Googleアナリティクスを利用して、サイトの利用状況を分析しています。
               Googleアナリティクスは、Cookieを使用してデータを収集しますが、個人を特定する情報は収集しません。
@@ -87,7 +87,7 @@ export default function Privacy() {
             </p>
             <p className="mt-4">
               Googleによるデータの収集と処理の詳細については、
-              <a href="https://policies.google.com/privacy?hl=ja" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+              <a href="https://policies.google.com/privacy?hl=ja" target="_blank" rel="noopener noreferrer" className="font-bold underline">
                 Googleプライバシーポリシー
               </a>
               をご確認ください。
@@ -95,7 +95,7 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">7. 情報の管理と第三者提供</h2>
+            <h2 className="text-xl font-black mb-4">7. 情報の管理と第三者提供</h2>
             <p>
               収集した情報は、適切な安全管理措置を講じて管理し、以下の場合を除き、第三者に提供することはありません：
             </p>
@@ -108,7 +108,7 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">8. ユーザーの権利</h2>
+            <h2 className="text-xl font-black mb-4">8. ユーザーの権利</h2>
             <p>
               当サイトの利用者は、以下の権利を有します：
             </p>
@@ -122,7 +122,7 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">9. プライバシーポリシーの変更</h2>
+            <h2 className="text-xl font-black mb-4">9. プライバシーポリシーの変更</h2>
             <p>
               当サイトは、必要に応じて本プライバシーポリシーを変更することがあります。
               変更後のプライバシーポリシーは、当サイトに掲載された時点で効力を生じるものとします。
@@ -131,13 +131,13 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">10. お問い合わせ</h2>
+            <h2 className="text-xl font-black mb-4">10. お問い合わせ</h2>
             <p>
               本プライバシーポリシーに関するご質問やご意見は、お問い合わせフォームからお寄せください。
             </p>
           </section>
 
-          <div className="text-sm text-gray-600 mt-12">
+          <div className="text-sm text-sub mt-12">
             最終更新日: 2025年3月28日
           </div>
         </div>

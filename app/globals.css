@@ -4,21 +4,20 @@
 @import 'tailwindcss/utilities';
 
 @layer base {
-  :root {
-    --background: #ffffff;
-    --foreground: #171717;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: #0a0a0a;
-      --foreground: #ededed;
-    }
-  }
-
   body {
-    color: var(--foreground);
-    background: var(--background);
-    font-family: Arial, Helvetica, sans-serif;
+    @apply bg-white text-ink font-sans font-medium;
+  }
+}
+
+@layer components {
+  /* 太枠＋影のボタン。押すと影が縮んで沈む */
+  .btn-pop {
+    @apply inline-flex items-center justify-center rounded-xl border-2 border-ink bg-pop font-black text-ink shadow-hard-sm transition-transform;
+  }
+  .btn-pop:active {
+    @apply translate-x-[2px] translate-y-[2px] shadow-none;
+  }
+  .btn-pop:disabled {
+    @apply cursor-not-allowed bg-gray-200 text-gray-500 shadow-none;
   }
 }

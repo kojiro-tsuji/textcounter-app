@@ -2,6 +2,11 @@
 
 import { useState } from 'react';
 import { jsPDF } from 'jspdf';
+import { ImagePlus, ArrowUp, ArrowDown, X } from 'lucide-react';
+
+// jsPDF が扱える形式のみ（SVG・TIFF は非対応）
+const SUPPORTED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
+const SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
 
 export default function ImagePDFConverter() {
   const [files, setFiles] = useState<File[]>([]);
@@ -14,31 +19,27 @@ export default function ImagePDFConverter() {
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       // 画像ファイルのみをフィルタリング
-      const imageFiles = Array.from(event.target.files).filter(file => 
-        file.type.startsWith('image/') || isImageByExtension(file.name)
-      );
-      
+      const imageFiles = Array.from(event.target.files).filter(isImageFile);
+
       if (imageFiles.length === 0) {
-        setError('画像ファイルが選択されていません。JPG, PNG, GIF, WEBP, BMPなどの画像ファイルを選択してください。');
+        setError('対応している画像がありません。JPG・PNG・GIF・WEBP・BMPを選んでください。');
         return;
       }
-      
+
       setFiles(imageFiles);
       setError(null);
     }
   };
 
   // ドラッグ&ドロップ処理
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
     event.preventDefault();
     
     // 画像ファイルのみをフィルタリング
-    const imageFiles = Array.from(event.dataTransfer.files).filter(file => 
-      file.type.startsWith('image/') || isImageByExtension(file.name)
-    );
-    
+    const imageFiles = Array.from(event.dataTransfer.files).filter(isImageFile);
+
     if (imageFiles.length === 0) {
-      setError('画像ファイルが含まれていません。JPG, PNG, GIF, WEBP, BMPなどの画像ファイルをドロップしてください。');
+      setError('対応している画像がありません。JPG・PNG・GIF・WEBP・BMPをドロップしてください。');
       return;
     }
     
@@ -46,11 +47,12 @@ export default function ImagePDFConverter() {
     setError(null);
   };
 
-  // 拡張子による画像ファイル判定
-  const isImageByExtension = (filename: string): boolean => {
-    const ext = filename.split('.').pop()?.toLowerCase() || '';
-    return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'tif', 'svg'].includes(ext);
-  };
+  // 対応画像かどうか（MIMEタイプ、なければ拡張子で判定）
+  function isImageFile(file: File): boolean {
+    if (file.type) return SUPPORTED_TYPES.includes(file.type);
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    return SUPPORTED_EXTENSIONS.includes(ext);
+  }
 
   // ファイル削除処理
   const removeFile = (index: number) => {
@@ -94,7 +96,7 @@ export default function ImagePDFConverter() {
       const pageHeight = pdf.internal.pageSize.getHeight();
       
       let isFirstPage = true;
-      let totalFiles = files.length;
+      const totalFiles = files.length;
 
       // 各ファイルを処理
       for (let i = 0; i < files.length; i++) {
@@ -199,11 +201,6 @@ export default function ImagePDFConverter() {
     });
   };
 
-  // 画像ファイルかどうかを確認する関数
-  const isImageFile = (file: File): boolean => {
-    return file.type.startsWith('image/') || isImageByExtension(file.name);
-  };
-
   // ファイルの順序を入れ替える
   const moveFile = (fromIndex: number, toIndex: number) => {
     if (fromIndex < 0 || fromIndex >= files.length || toIndex < 0 || toIndex >= files.length) {
@@ -231,141 +228,119 @@ export default function ImagePDFConverter() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      <h2 className="text-xl font-bold text-center mb-4">画像用PDF変換ツール</h2>
-      <p className="text-center text-gray-600 mb-6">JPG, PNG, GIF, WEBP, BMPなどの画像ファイルをPDFに変換します</p>
-      
+    <section className="border-2 border-ink rounded-[20px] shadow-[6px_6px_0_#111111] overflow-hidden bg-white">
       {/* ファイル選択エリア */}
-      <div
+      <label
+        htmlFor="file-input"
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-6 cursor-pointer hover:bg-gray-50 transition-colors"
-        onClick={() => document.getElementById('file-input')?.click()}
+        className="block bg-pink border-b-2 border-ink px-6 py-12 text-center cursor-pointer hover:brightness-105"
       >
-        <div className="text-3xl mb-3">🖼️</div>
-        <p className="mb-2">ここに画像ファイルをドロップ、またはクリックして選択</p>
-        <p className="text-xs text-gray-500">複数ファイル選択可能</p>
+        <span className="mx-auto mb-4 w-16 h-16 border-2 border-ink rounded-2xl bg-white flex items-center justify-center">
+          <ImagePlus size={32} strokeWidth={2.2} aria-hidden="true" />
+        </span>
+        <span className="block text-lg font-black">ここに画像をドロップ</span>
+        <span className="block mt-1 text-sm font-bold">またはクリックして選ぶ（何枚でもOK）</span>
         <input
           id="file-input"
           type="file"
           multiple
-          accept="image/*"
+          accept={SUPPORTED_TYPES.join(',')}
           onChange={handleFileSelect}
-          className="hidden"
+          className="sr-only"
         />
-      </div>
+      </label>
 
-      {/* 選択ファイル */}
-      {files.length > 0 && (
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <p className="font-medium">選択した画像 ({files.length}件):</p>
-            <button 
-              onClick={clearAllFiles}
-              className="text-red-500 hover:text-red-700 text-sm"
-            >
-              すべて削除
-            </button>
-          </div>
-          
-          <ul className="mt-2 space-y-2 max-h-64 overflow-y-auto border rounded-lg p-2">
-            {files.map((file, index) => (
-              <li key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded hover:bg-gray-100">
-                <div className="flex items-center">
-                  <span className="mr-2 text-xl">🖼️</span>
-                  <div>
-                    <span className="text-sm">{file.name}</span>
-                    <span className="text-xs text-gray-500 ml-2">{getFileSizeText(file.size)}</span>
+      <div className="p-6 flex flex-col gap-5">
+        {/* 選択ファイル */}
+        {files.length > 0 ? (
+          <div>
+            <div className="flex justify-between items-center mb-3">
+              <p className="font-bold">選んだ画像（{files.length}枚）</p>
+              <button type="button" onClick={clearAllFiles} className="text-sm font-bold underline">
+                すべて外す
+              </button>
+            </div>
+
+            <ol className="space-y-2 max-h-72 overflow-y-auto">
+              {files.map((file, index) => (
+                <li key={index} className="flex items-center gap-3 border-2 border-ink rounded-xl px-3 py-2">
+                  <span className="w-8 shrink-0 text-center font-mono text-sm">{index + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="truncate text-sm font-bold">{file.name}</div>
+                    <div className="text-xs text-sub">{getFileSizeText(file.size)}</div>
                   </div>
-                </div>
-                <div className="flex items-center">
                   {files.length > 1 && (
                     <>
-                      <button 
+                      <button
+                        type="button"
                         onClick={() => moveFileUp(index)}
                         disabled={index === 0}
-                        className="text-gray-500 hover:text-gray-700 px-1 disabled:opacity-30"
+                        aria-label={`${file.name}を上へ`}
+                        className="w-9 h-9 border-2 border-ink rounded-lg flex items-center justify-center disabled:opacity-30"
                       >
-                        ↑
+                        <ArrowUp size={16} strokeWidth={2.4} />
                       </button>
-                      <button 
+                      <button
+                        type="button"
                         onClick={() => moveFileDown(index)}
                         disabled={index === files.length - 1}
-                        className="text-gray-500 hover:text-gray-700 px-1 disabled:opacity-30 mr-1"
+                        aria-label={`${file.name}を下へ`}
+                        className="w-9 h-9 border-2 border-ink rounded-lg flex items-center justify-center disabled:opacity-30"
                       >
-                        ↓
+                        <ArrowDown size={16} strokeWidth={2.4} />
                       </button>
                     </>
                   )}
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFile(index);
-                    }}
-                    className="text-red-500 hover:text-red-700 ml-2"
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)}
+                    aria-label={`${file.name}を外す`}
+                    className="w-9 h-9 border-2 border-ink rounded-lg bg-ink text-white flex items-center justify-center"
                   >
-                    ✕
+                    <X size={16} strokeWidth={2.4} />
                   </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-          
-          {/* ページ順の説明 */}
-          {files.length > 1 && (
-            <p className="text-xs text-gray-500 mt-1">↑↓ボタンでPDFのページ順を変更できます</p>
-          )}
-        </div>
-      )}
-
-      {/* エラー表示 */}
-      {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-
-      {/* 進捗表示 */}
-      {loading && (
-        <div className="mb-4">
-          <div className="flex justify-between text-sm mb-1">
-            <span>{processingFile ? `処理中: ${processingFile}` : '変換中...'}</span>
-            <span>{progress}%</span>
+                </li>
+              ))}
+            </ol>
+            {files.length > 1 && (
+              <p className="text-xs text-sub mt-2">上から順にPDFのページになります。矢印で入れ替えできます。</p>
+            )}
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div 
-              className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-        </div>
-      )}
+        ) : (
+          <p className="text-sm text-sub">対応形式：JPG・PNG・GIF・WEBP・BMP</p>
+        )}
 
-      {/* 変換ボタン */}
-      <button
-        onClick={handleConvertToPDF}
-        disabled={files.length === 0 || loading}
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-sm"
-      >
-        {loading ? '変換中...' : 'PDFに変換してダウンロード'}
-      </button>
-      
-      {/* 機能説明 */}
-      <div className="mt-6 bg-blue-50 p-4 rounded-lg">
-        <h3 className="font-medium mb-2">このツールでできること</h3>
-        <ul className="text-sm space-y-1 text-gray-700">
-          <li>• 複数の画像ファイルを1つのPDFに変換</li>
-          <li>• ドラッグ&ドロップで簡単にファイル追加</li>
-          <li>• ページ順の並べ替え</li>
-          <li>• 画像サイズをPDFページに最適化</li>
-        </ul>
+        {/* エラー表示 */}
+        {error && (
+          <div role="alert" className="border-2 border-ink bg-pop rounded-xl px-4 py-3 font-bold text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* 進捗表示 */}
+        {loading && (
+          <div>
+            <div className="flex justify-between text-sm font-bold mb-1.5">
+              <span className="truncate">{processingFile ? `処理中：${processingFile}` : '変換中…'}</span>
+              <span>{progress}%</span>
+            </div>
+            <div className="w-full h-3 border-2 border-ink rounded-full overflow-hidden">
+              <div className="h-full bg-ink transition-all duration-300" style={{ width: `${progress}%` }}></div>
+            </div>
+          </div>
+        )}
+
+        {/* 変換ボタン */}
+        <button
+          type="button"
+          onClick={handleConvertToPDF}
+          disabled={files.length === 0 || loading}
+          className="btn-pop h-[60px] text-[19px]"
+        >
+          {loading ? '変換中…' : 'PDFにしてダウンロード'}
+        </button>
       </div>
-      
-      {/* 注意事項 */}
-      <div className="mt-3 text-xs text-gray-500">
-        <p>※ 大きな画像ファイルの変換には時間がかかる場合があります</p>
-        <p>※ 変換処理はブラウザ上で実行されるため、端末の性能に依存します</p>
-      </div>
-    </div>
+    </section>
   );
 }

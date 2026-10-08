@@ -1,129 +1,36 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { tools } from './tools';
 
 export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-  // ページ遷移時にメニューを閉じる
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
-
   return (
-    <>
-      {/* ハンバーガーメニューボタン */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 right-4 z-50 bg-white p-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
-        aria-label="メニュー"
-      >
-        <svg
-          className="w-6 h-6 text-gray-700"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          {isOpen ? (
-            <path d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          )}
-        </svg>
-      </button>
-
-      {/* メニューオーバーレイ */}
-      <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ${
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-        onClick={() => setIsOpen(false)}
-      />
-
-      {/* メニュー本体 */}
-      <nav
-        className={`fixed top-16 right-4 z-40 bg-white rounded-lg shadow-xl transform transition-transform duration-300 ${
-          isOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="p-4 w-64">
-          <div className="text-lg font-bold mb-4">メニュー</div>
-          <ul className="space-y-2">
-            <li>
+    <header className="bg-pop border-b-2 border-ink">
+      <div className="max-w-5xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-x-7 gap-y-3">
+        <Link href="/" className="text-xl font-black">
+          便利ツール集
+        </Link>
+        <nav className="flex flex-wrap gap-2 text-sm font-bold">
+          {tools.map((tool) => {
+            const active = pathname === tool.href;
+            return (
               <Link
-                href="/"
-                className={`block p-2 rounded hover:bg-gray-100 ${
-                  pathname === '/' ? 'text-blue-500 font-semibold' : 'text-gray-700'
+                key={tool.href}
+                href={tool.href}
+                aria-current={active ? 'page' : undefined}
+                className={`px-3.5 py-2.5 rounded-full border-2 border-ink transition-colors ${
+                  active ? 'bg-ink text-white' : 'bg-white hover:bg-ink hover:text-white'
                 }`}
-                onClick={() => setIsOpen(false)}
               >
-                ホーム
+                {tool.title}
               </Link>
-            </li>
-            <li>
-              <Link
-                href="/counter"
-                className={`block p-2 rounded hover:bg-gray-100 ${
-                  pathname === '/counter' ? 'text-blue-500 font-semibold' : 'text-gray-700'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                文字数カウンター
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/password"
-                className={`block p-2 rounded hover:bg-gray-100 ${
-                  pathname === '/password' ? 'text-blue-500 font-semibold' : 'text-gray-700'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                パスワード生成
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/snapPDF"
-                className={`block p-2 rounded hover:bg-gray-100 ${
-                  pathname === '/snapPDF' ? 'text-blue-500 font-semibold' : 'text-gray-700'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                PDF変換
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/terms"
-                className={`block p-2 rounded hover:bg-gray-100 ${
-                  pathname === '/terms' ? 'text-blue-500 font-semibold' : 'text-gray-700'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                利用規約
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/privacy"
-                className={`block p-2 rounded hover:bg-gray-100 ${
-                  pathname === '/privacy' ? 'text-blue-500 font-semibold' : 'text-gray-700'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                プライバシーポリシー
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </>
+            );
+          })}
+        </nav>
+      </div>
+    </header>
   );
-} 
+}
