@@ -1,157 +1,124 @@
+import type { Metadata } from "next";
+import Link from 'next/link';
 import Layout from '../components/Layout';
+
+export const metadata: Metadata = {
+  title: "利用規約 | 便利ツール集",
+  alternates: {
+    canonical: "https://textcounter-app.vercel.app/terms",
+  },
+};
 
 export default function Terms() {
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="leading-loose">
-          <h1 className="text-[40px] font-black mb-8">利用規約</h1>
-          
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">1. はじめに</h2>
-            <p>
-              この利用規約（以下、「本規約」といいます。）は、当サイトが提供する便利ツール集（文字数カウンター、パスワード生成ツール、PDF変換ツールを含む、以下「本サービス」といいます。）の利用条件を定めるものです。
-            </p>
-          </section>
+      <main className="max-w-[800px] mx-auto px-6 pt-14 pb-[88px] leading-loose">
+        <h1 className="text-[40px] font-black mb-8">利用規約</h1>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">2. 利用規約の適用</h2>
-            <p>
-              本規約は、本サービスの利用に関する当サイトと利用者との間の権利義務関係を定めることを目的とし、利用者と当サイトとの間の本サービスの利用に関わる一切の関係に適用されます。
-            </p>
-            <p className="mt-2">
-              利用者は、本サービスを利用することにより、本規約に同意したものとみなされます。
-            </p>
-          </section>
+        <p className="mb-10">
+          この利用規約（以下「本規約」）は、便利ツール集（以下「当サイト」）の利用条件を定めるものです。当サイトを利用した時点で、本規約に同意したものとみなします。
+        </p>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">3. サービスの内容</h2>
-            <p>
-              本サービスは、以下の機能を提供します：
-            </p>
-            <ul className="list-disc pl-6 mb-4">
-              <li><strong>文字数カウンター：</strong>テキストの文字数、単語数、行数をカウントする機能</li>
-              <li><strong>パスワード生成ツール：</strong>安全で強力なパスワードを生成する機能</li>
-              <li><strong>PDF変換ツール：</strong>画像、テキスト、Office文書などの各種ファイルをPDFに変換する機能</li>
-            </ul>
-            <p>
-              利用者は、これらの機能をブラウザ上で利用することができます。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第1条（サービスの内容）</h2>
+          <p>当サイトは、次のツールを無料で提供します。</p>
+          <ul className="list-disc pl-6 mt-2 space-y-1">
+            <li><strong>文字数カウンター：</strong>入力した文章の文字数を数える機能</li>
+            <li><strong>パスワード生成：</strong>指定した長さと文字の種類でランダムなパスワードを作る機能</li>
+            <li><strong>画像→PDF：</strong>画像ファイル（JPG・PNG・GIF・WEBP・BMP）を1つのPDFにまとめる機能</li>
+          </ul>
+          <p className="mt-2">インターネットへの接続にかかる通信料は、利用者の負担となります。</p>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">4. 利用料金</h2>
-            <p>
-              本サービスは無料で提供されます。ただし、インターネット接続に必要な通信費用は利用者の負担となります。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第2条（データの取り扱い）</h2>
+          <p>
+            ツールに入力・選択したデータは、利用者のブラウザの中だけで処理され、運営者のサーバーには送信・保存されません。そのため、運営者はこれらのデータを復元することができません。必要なデータは、利用者ご自身で保存してください。詳しくは
+            <Link href="/privacy" className="font-bold underline">プライバシーポリシー</Link>
+            をご確認ください。
+          </p>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">5. データの取り扱い</h2>
-            <p>
-              本サービスで処理されるデータ（入力テキスト、生成パスワード、変換ファイルなど）は、すべてブラウザ上で処理され、当サイトのサーバーには送信または保存されません。ただし、以下の点にご注意ください：
-            </p>
-            <ul className="list-disc pl-6 mb-4">
-              <li>PDF変換ツールでアップロードされたファイルの内容は、ブラウザのメモリ上でのみ処理されます</li>
-              <li>パスワード生成ツールで生成されたパスワードは、ブラウザのセッション中のみ表示されます</li>
-              <li>文字数カウンターに入力されたテキストは、ページを離れるとクリアされます</li>
-            </ul>
-            <p>
-              利用者自身の責任において、重要なデータのバックアップを取ることをお勧めします。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第3条（作成したものの利用）</h2>
+          <p>
+            利用者がツールで作成したPDFやパスワード、入力した文章の権利は、利用者に帰属します。個人・商用を問わず、自由に利用できます。
+          </p>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">6. 知的財産権</h2>
-            <p>
-              本サービスに関連するすべてのコンテンツ（テキスト、グラフィック、ロゴ、アイコン、画像、音声クリップ、デジタルダウンロード、データ編集、ソフトウェア）は、当サイトまたはそのコンテンツ提供者の財産であり、日本および国際的な著作権法により保護されています。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第4条（知的財産権）</h2>
+          <p>
+            当サイトの文章、デザイン、ロゴなどの著作権は、運営者に帰属します。当サイトのソースコードの利用条件は、公開リポジトリに記載したライセンスに従います。
+          </p>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">7. 禁止事項</h2>
-            <p>
-              利用者は、本サービスの利用にあたり、以下の行為をしてはなりません：
-            </p>
-            <ul className="list-disc pl-6 mb-4">
-              <li>本サービスの運営を妨害する行為</li>
-              <li>本サービスのシステムやネットワークに過度の負担をかける行為</li>
-              <li>本サービスを通じて得た情報を商業的に利用する行為</li>
-              <li>本サービスのリバースエンジニアリング、逆コンパイル、逆アセンブルを行う行為</li>
-              <li>本サービスを違法な目的で使用する行為</li>
-              <li>第三者の権利を侵害する行為</li>
-              <li>その他、当サイトが不適切と判断する行為</li>
-            </ul>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第5条（禁止事項）</h2>
+          <p>利用者は、次の行為をしてはなりません。</p>
+          <ul className="list-disc pl-6 mt-2 space-y-1">
+            <li>法令または公序良俗に反する行為</li>
+            <li>第三者の権利を侵害する行為</li>
+            <li>大量の自動アクセスなど、当サイトのサーバーに過度な負担をかける行為</li>
+            <li>当サイトの文章やデザインを無断で転載し、または当サイトを自分のサービスであるかのように見せる行為</li>
+            <li>当サイトの運営を妨げる行為</li>
+            <li>その他、運営者が不適切と判断する行為</li>
+          </ul>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">8. サービスの変更・中断・終了</h2>
-            <p>
-              当サイトは、以下の場合には、利用者に事前に通知することなく、本サービスの全部または一部の提供を変更、中断、または終了することができるものとします：
-            </p>
-            <ul className="list-disc pl-6 mb-4">
-              <li>本サービスのシステムの保守点検または更新を行う場合</li>
-              <li>地震、落雷、火災、停電、天災などの不可抗力により、本サービスの提供が困難となった場合</li>
-              <li>コンピュータまたは通信回線等が事故により停止した場合</li>
-              <li>その他、当サイトが本サービスの提供が困難と判断した場合</li>
-            </ul>
-            <p>
-              当サイトは、本サービスの提供の変更、中断、終了によって生じたいかなる損害についても、一切の責任を負いません。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第6条（サービスの変更・中断・終了）</h2>
+          <p>
+            運営者は、保守や不具合の対応、天災などやむを得ない事情があるときは、事前の通知なく、当サイトの内容を変更し、または提供を中断・終了することがあります。
+          </p>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">9. 免責事項</h2>
-            <p>
-              当サイトは、本サービスに関して、以下の事項について一切の責任を負いません：
-            </p>
-            <ul className="list-disc pl-6 mb-4">
-              <li>本サービスの内容の正確性、信頼性、完全性、有用性</li>
-              <li>本サービスが利用者の特定の目的に適合すること</li>
-              <li>本サービスが中断なく提供されること</li>
-              <li>本サービスにバグやエラーがないこと</li>
-              <li>本サービスを通じて提供される情報が正確または最新であること</li>
-              <li>PDF変換ツールでの変換結果が常に期待通りであること</li>
-              <li>パスワード生成ツールで生成されたパスワードの安全性</li>
-            </ul>
-            <p>
-              利用者は、自己の責任において本サービスを利用するものとし、本サービスの利用により生じたいかなる損害についても、当サイトは一切の責任を負いません。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第7条（免責事項）</h2>
+          <ul className="list-disc pl-6 space-y-1">
+            <li>運営者は、ツールの結果（文字数、パスワード、PDFなど）が正確であること、利用者の目的に合うこと、不具合がないことを保証しません。</li>
+            <li>当サイトの利用、または第6条による変更・中断・終了によって利用者に損害が生じても、運営者は責任を負いません。</li>
+            <li>当サイトに掲載された広告や、リンク先の外部サイトの内容について、運営者は責任を負いません。</li>
+          </ul>
+          <p className="mt-2">
+            ただし、運営者の故意または重大な過失による損害については、この限りではありません。
+          </p>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">10. 広告の掲載</h2>
-            <p>
-              当サイトは、本サービス内に第三者の広告を掲載することがあります。広告内容に関する責任は、広告主に帰属します。広告のクリックによって移動した先のサイトについては、当サイトは一切の責任を負いません。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第8条（広告の掲載）</h2>
+          <p>
+            当サイトには、第三者が配信する広告が表示されることがあります。広告の内容に関する責任は、広告主が負います。
+          </p>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">11. プライバシー</h2>
-            <p>
-              当サイトのプライバシーポリシーは、本規約の一部を構成します。プライバシーポリシーについては、「プライバシーポリシー」のページをご確認ください。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第9条（規約の変更）</h2>
+          <p>
+            運営者は、必要に応じて本規約を変更することがあります。変更後の規約は、当サイトに掲載した時点から効力を生じます。
+          </p>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">12. 規約の変更</h2>
-            <p>
-              当サイトは、必要と判断した場合には、利用者に通知することなく本規約を変更することができるものとします。変更後の利用規約は、当サイトに掲載された時点で効力を生じるものとします。継続して本サービスを利用することにより、利用者は変更後の規約に同意したものとみなされます。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">第10条（準拠法・管轄裁判所）</h2>
+          <p>
+            本規約は日本法に従って解釈します。当サイトに関して紛争が生じた場合は、運営者の住所地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とします。
+          </p>
+        </section>
 
-          <section className="mb-8">
-            <h2 className="text-xl font-black mb-4">13. 準拠法・管轄裁判所</h2>
-            <p>
-              本規約の解釈にあたっては、日本法を準拠法とします。本サービスに関して紛争が生じた場合には、当サイトの所在地を管轄する裁判所を専属的合意管轄とします。
-            </p>
-          </section>
+        <section className="mb-10">
+          <h2 className="text-xl font-black mb-4">お問い合わせ先</h2>
+          <p>
+            運営者：辻 恒次朗<br />
+            メール：gongbenhui23@gmail.com
+          </p>
+        </section>
 
-          <div className="text-sm text-sub mt-12">
-            最終更新日: 2025年3月28日
-          </div>
-        </div>
-      </div>
+        <p className="text-sm text-sub">
+          制定日：2025年3月28日<br />
+          最終改定日：2026年10月8日
+        </p>
+      </main>
     </Layout>
   );
 }
